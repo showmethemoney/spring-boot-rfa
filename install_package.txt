@@ -1,0 +1,2 @@
+mvn install:install-file -Dfile=lib\rfa.jar -DgroupId=com.reuters -DartifactId=rfa -Dversion=1.0.0 -Dpackaging=jar
+
