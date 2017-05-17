@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.mycompany.reuters.GenericOMMParser;
 import com.mycompany.reuters.RobustFoundationAPI;
@@ -13,17 +14,23 @@ import com.reuters.rfa.omm.OMMAttribInfo;
 import com.reuters.rfa.omm.OMMMsg;
 import com.reuters.rfa.session.omm.OMMItemEvent;
 
+@Component
 public class ItemEvent implements Client
 {
 	protected static final Logger logger = LoggerFactory.getLogger( ItemEvent.class );
 	private RobustFoundationAPI instance = null;
 	private Collection<String> identifiers = null;
 	private Collection<String> fields = null;
+	private GenericOMMParser parser = null;
 
-	public ItemEvent(RobustFoundationAPI instance, Collection<String> identifiers, Collection<String> fields) {
+	public ItemEvent() {
+	}
+
+	public ItemEvent(RobustFoundationAPI instance, Collection<String> identifiers, Collection<String> fields, GenericOMMParser parser) {
 		this.instance = instance;
 		this.identifiers = identifiers;
 		this.fields = fields;
+		this.parser = parser;
 	}
 
 	/**
@@ -32,6 +39,7 @@ public class ItemEvent implements Client
 	 * Payload: 13 bytes FIELD_LIST FIELD_ENTRY 114/BID_NET_CH: -0.28 FIELD_ENTRY 372/IRGPRC: -0.25
 	 */
 	public void processEvent(Event event) {
+		logger.info( "event type : {}", event.getType() );
 		if (event.getType() == Event.COMPLETION_EVENT) {
 			return;
 		}
@@ -52,7 +60,7 @@ public class ItemEvent implements Client
 			logger.info( "event item name : {}", eventItemName );
 
 			if (identifiers.contains( eventItemName )) {
-				GenericOMMParser parser = new GenericOMMParser();
+				// GenericOMMParser parser = new GenericOMMParser();
 				parser.setFields( fields );
 
 				parser.parse( respMsg );

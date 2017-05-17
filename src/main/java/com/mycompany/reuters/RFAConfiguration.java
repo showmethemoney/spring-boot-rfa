@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class RFAConfiguration
 {
+	
 	@Bean
 	@Scope("singleton")
 	public RobustFoundationAPI getRobustfoundationAPI() {

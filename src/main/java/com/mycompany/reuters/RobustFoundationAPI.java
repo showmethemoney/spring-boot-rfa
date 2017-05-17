@@ -92,10 +92,10 @@ public class RobustFoundationAPI
 		}
 	}
 
-	public void sendRequest(Collection<String> identifiers, Collection<String> fields) {
-		logger.info( "run.." );
-		itemManager.sendRequest( identifiers, fields );
-	}
+//	public void sendRequest(Collection<String> identifiers, Collection<String> fields) {
+//		logger.info( "run.." );
+//		itemManager.sendRequest( identifiers, fields );
+//	}
 
 	// This method is called when the login was not successful
 	// The application exits
@@ -141,7 +141,7 @@ public class RobustFoundationAPI
 			// Create an OMMEncoder
 			encoder = pool.acquireEncoder();
 
-			itemManager = new ItemManager( this );
+//			itemManager = new ItemManager( this );
 		} catch (Throwable cause) {
 			logger.error( cause.getMessage(), cause );
 

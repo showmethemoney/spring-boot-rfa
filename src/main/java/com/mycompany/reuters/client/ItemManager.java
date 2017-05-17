@@ -7,7 +7,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Component;
 
+import com.mycompany.reuters.GenericOMMParser;
 import com.mycompany.reuters.RobustFoundationAPI;
 import com.mycompany.reuters.event.ItemEvent;
 import com.reuters.rfa.common.Handle;
@@ -17,12 +21,18 @@ import com.reuters.rfa.rdm.RDMInstrument;
 import com.reuters.rfa.rdm.RDMMsgTypes;
 import com.reuters.rfa.session.omm.OMMItemIntSpec;
 
+@Component
 public class ItemManager
 {
 	protected static final Logger logger = LoggerFactory.getLogger( ItemManager.class );
-	private RobustFoundationAPI instance = null;
 	private List<Handle> itemHandles = new ArrayList<Handle>();
-
+	@Autowired
+	private RobustFoundationAPI instance = null;
+	@Autowired
+	private GenericOMMParser parser = null;
+	@Autowired
+	private CacheManager cacheManager = null;
+	
 	public ItemManager() {
 	}
 
@@ -65,7 +75,7 @@ public class ItemManager
 			// Set the message into interest spec
 			ommItemIntSpec.setMsg( ommmsg );
 
-			ItemEvent event = new ItemEvent( instance, identifiers, fields );
+			ItemEvent event = new ItemEvent( instance, identifiers, fields, parser );
 
 			Handle itemHandle = instance.getOmmConsumer().registerClient( instance.getEventQueue(), ommItemIntSpec, event, null );
 			itemHandles.add( itemHandle );

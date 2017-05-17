@@ -22,13 +22,13 @@ public class DispatchThread extends Thread
 		while (true) {
 			try {
 				eventQueue.dispatch( 10000 );
-				logger.info( "run..." );
 				Thread.sleep( 10000 );
+				logger.info( "run... {}", eventQueue.isActive() );
 			} catch (Throwable cause) {
 				logger.error( cause.getMessage(), cause );
 
 				throw new RuntimeException( cause );
-			}
+			}  
 		}
 	}
 }

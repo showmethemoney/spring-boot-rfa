@@ -3,6 +3,7 @@ package com.mycompany.reuters.client;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.mycompany.reuters.RobustFoundationAPI;
 import com.mycompany.reuters.event.LoginEvent;
@@ -15,6 +16,7 @@ import com.reuters.rfa.rdm.RDMMsgTypes;
 import com.reuters.rfa.rdm.RDMUser;
 import com.reuters.rfa.session.omm.OMMItemIntSpec;
 
+@Component
 public class LoginClient
 {
 	protected static final Logger logger = Logger.getLogger( LoginClient.class );

@@ -10,6 +10,10 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Component;
 
 import com.reuters.rfa.dictionary.DictionaryException;
 import com.reuters.rfa.dictionary.FidDef;
@@ -28,6 +32,7 @@ import com.reuters.rfa.omm.OMMTypes;
 import com.reuters.rfa.omm.OMMVector;
 import com.reuters.rfa.omm.OMMVectorEntry;
 
+@Component
 public class GenericOMMParser
 {
 	protected static final Logger logger = LoggerFactory.getLogger( GenericOMMParser.class );
@@ -35,7 +40,9 @@ public class GenericOMMParser
 	private static FieldDictionary CURRENT_DICTIONARY = null;
 	private String itemName = null;
 	private Collection<String> fields = null;
-
+	@Autowired
+	private CacheManager cacheManager = null;
+	
 	public GenericOMMParser() {
 	}
 
@@ -204,6 +211,9 @@ public class GenericOMMParser
 								if (field.equals( fiddef.getName() )) {
 									logger.info( "Identifier : {}, field : {} = {}", new Object[] { itemName, field, data.toString() } );
 									// QuoteStream.quoteMap.put(itemName+","+field, data.toString());
+									
+									Cache cache = cacheManager.getCache( "indexes" );
+									cache.put( itemName + "," + field, data.toString() );
 								}
 							}
 							// }

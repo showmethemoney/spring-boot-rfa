@@ -35,7 +35,13 @@ public class CacheController
 			
 			while(iter.hasNext()) {
 				String key = iter.next();
-				logger.info( "key : {}, value : {}", key, (String) ((Element) ehCache.get( key )).getObjectValue() );
+				String value = null;
+				Element element = (Element) ehCache.get( key );
+				
+				if (null != element) {
+					value = (String) element.getObjectValue();
+				}
+				logger.info( "key : {}, value : {}", key, value );
 			}
 		}
 		
