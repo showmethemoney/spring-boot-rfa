@@ -1,11 +1,12 @@
 package com.mycompany.reuters.event;
 
-import java.util.Collection;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.mycompany.bean.ItemIntSpec;
 import com.mycompany.reuters.GenericOMMParser;
 import com.mycompany.reuters.RobustFoundationAPI;
 import com.reuters.rfa.common.Client;
@@ -14,22 +15,20 @@ import com.reuters.rfa.omm.OMMAttribInfo;
 import com.reuters.rfa.omm.OMMMsg;
 import com.reuters.rfa.session.omm.OMMItemEvent;
 
+
 @Component
-public class ItemEvent implements Client
+public class ItemMapEvent implements Client
 {
-	protected static final Logger logger = LoggerFactory.getLogger( ItemEvent.class );
+	protected static final Logger logger = LoggerFactory.getLogger( ItemMapEvent.class );
 	private RobustFoundationAPI instance = null;
-	private Collection<String> identifiers = null;
-	private Collection<String> fields = null;
+	private Map<String, ItemIntSpec> itemIntSpecMap = null;
 	private GenericOMMParser parser = null;
 
-	public ItemEvent() {
-	}
+	public ItemMapEvent() {}
 
-	public ItemEvent(RobustFoundationAPI instance, Collection<String> identifiers, Collection<String> fields, GenericOMMParser parser) {
+	public ItemMapEvent(RobustFoundationAPI instance, Map<String, ItemIntSpec> itemIntSpecMap, GenericOMMParser parser) {
 		this.instance = instance;
-		this.identifiers = identifiers;
-		this.fields = fields;
+		this.itemIntSpecMap = itemIntSpecMap;
 		this.parser = parser;
 	}
 
@@ -40,7 +39,7 @@ public class ItemEvent implements Client
 	 */
 	public void processEvent(Event event) {
 		logger.info( "event type : {}", event.getType() );
-		
+
 		if (event.getType() == Event.COMPLETION_EVENT) {
 			return;
 		}
@@ -60,9 +59,11 @@ public class ItemEvent implements Client
 
 			logger.info( "event item name : {}", eventItemName );
 
-			if (identifiers.contains( eventItemName )) {
-				// GenericOMMParser parser = new GenericOMMParser();
-				parser.setFields( fields );
+			if (itemIntSpecMap.containsKey( eventItemName )) {
+				/**
+				 * 傳入 index 感興趣的 fields collection
+				 */
+				parser.setFields( ((ItemIntSpec) itemIntSpecMap.get( eventItemName )).getFields() );
 
 				parser.parse( respMsg );
 			}

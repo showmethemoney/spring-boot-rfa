@@ -32,6 +32,7 @@ import com.reuters.rfa.omm.OMMTypes;
 import com.reuters.rfa.omm.OMMVector;
 import com.reuters.rfa.omm.OMMVectorEntry;
 
+
 @Component
 public class GenericOMMParser
 {
@@ -42,9 +43,8 @@ public class GenericOMMParser
 	private Collection<String> fields = null;
 	@Autowired
 	private CacheManager cacheManager = null;
-	
-	public GenericOMMParser() {
-	}
+
+	public GenericOMMParser() {}
 
 	public static void initializeDictionary(String fieldDictionaryFilename, String enumDictionaryFilename) throws DictionaryException {
 		FieldDictionary dictionary = FieldDictionary.create();
@@ -89,6 +89,7 @@ public class GenericOMMParser
 	 */
 	protected void parseMsg(OMMMsg msg) {
 		logger.info( "msg.getMsgType() : {} , msg.getDataType() : {}..", new Object[] { msg.getMsgType(), msg.getDataType() } );
+
 		itemName = msg.getAttribInfo().getName();
 
 		if (msg.getDataType() == OMMTypes.PERMISSION_DATA) {
@@ -119,7 +120,7 @@ public class GenericOMMParser
 
 	private void parseAggregateHeader(OMMData data) {
 		short dataType = data.getType();
-		logger.info( "dataType : {}", dataType );
+		logger.debug( "dataType : {}", dataType );
 
 		switch (dataType) {
 		case OMMTypes.FIELD_LIST: {
@@ -154,7 +155,7 @@ public class GenericOMMParser
 
 		if (data.isBlank()) {
 		} else if (OMMTypes.isAggregate( data.getType() )) {
-			logger.info( "OMMTypes is Aggregate" );
+			logger.debug( "OMMTypes is Aggregate" );
 
 			parseAggregate( data );
 		} else if (data.getType() == OMMTypes.MSG) {
@@ -207,15 +208,22 @@ public class GenericOMMParser
 							// QuoteStream.quoteMap.put( itemName + ",TIME", data.toString() );
 						} else {
 							// if (null != fields) {
-							for (String field : fields) {
-								if (field.equals( fiddef.getName() )) {
-									logger.info( "Identifier : {}, field : {} = {}", new Object[] { itemName, field, data.toString() } );
-									// QuoteStream.quoteMap.put(itemName+","+field, data.toString());
-									
-									Cache cache = cacheManager.getCache( "indexes" );
-									cache.put( itemName + "," + field, data.toString() );
-								}
+							if (fields.contains( fiddef.getName() )) {
+								logger.info( "Identifier : {}, field : {} = {}", new Object[] { itemName, fiddef.getName(), data.toString() } );
+								// // QuoteStream.quoteMap.put(itemName+","+field, data.toString());
+
+								Cache cache = cacheManager.getCache( "indexes" );
+								cache.put( itemName + fiddef.getName(), data.toString() );
 							}
+							// for (String field : fields) {
+							// if (field.equals( fiddef.getName() )) {
+							// logger.info( "Identifier : {}, field : {} = {}", new Object[] { itemName, field, data.toString() } );
+							// // QuoteStream.quoteMap.put(itemName+","+field, data.toString());
+							//
+							// Cache cache = cacheManager.getCache( "indexes" );
+							// cache.put( itemName + field, data.toString() );
+							// }
+							// }
 							// }
 						}
 					} else {

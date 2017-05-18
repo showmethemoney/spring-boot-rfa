@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mycompany.bean.ItemIntSpec;
 import com.mycompany.reuters.client.ItemManager;
 
 @Controller
@@ -78,20 +79,28 @@ public class IndexController
 		return "Hello World!";
 	}
 	
-	@RequestMapping("/run2")
+	/**
+	 * 針對不同的 index，設定有興趣的 fields
+	 */
+	@RequestMapping("/runMap")
 	@ResponseBody
-	public String run2() {
-		logger.info( "send request 2 " );
+	public String runMap() {
+		logger.info( "send request Map " );
+		
+		List<ItemIntSpec> itemIntSpecs = new ArrayList<ItemIntSpec>();
+		
+		List<String> usdFields = new ArrayList<String>();
+		usdFields.add( "ASK" );
+		usdFields.add( "BID" );
+		
+		List<String> jpyFields = new ArrayList<String>();
+		jpyFields.add( "ASK" );
+		
+		itemIntSpecs.add( new ItemIntSpec( "USD=", usdFields ) );
+		itemIntSpecs.add( new ItemIntSpec( "JPY=", jpyFields ) );
 
-		List<String> identifiers = new ArrayList<String>();
-		List<String> fields = new ArrayList<String>();
+		itemManager.sendRequest( itemIntSpecs );
 
-		identifiers.add( "USD=" );
-		fields.add( "ASK" );
-		fields.add( "BID" );
-
-		itemManager.sendRequest( identifiers, fields );
-
-		return "Hello World! 2";
+		return "Hello World! Map";
 	}
 }

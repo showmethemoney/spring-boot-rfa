@@ -2,7 +2,6 @@ package com.mycompany.reuters;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.util.Collection;
 import java.util.prefs.Preferences;
 
 import javax.annotation.PreDestroy;
@@ -24,6 +23,10 @@ public class RobustFoundationAPI
 {
 	protected static final Logger logger = LoggerFactory.getLogger( RobustFoundationAPI.class );
 
+	public static final String NAMED_EVENT_QUEUE = "defaultQueue";
+	public static final String NAMED_OMM_CONSUMER = "defaultConsumer";	
+	public static final String NAMED_HANDLE_CACHE = "handles";
+	
 	private EventQueue eventQueue = null;
 	private Session session = null;
 	private OMMConsumer ommConsumer = null;
@@ -38,11 +41,8 @@ public class RobustFoundationAPI
 	private String userName = null;
 	private String fieldDictionaryFilename = null;
 	private String enumDictionaryFilename = null;
-	private String feedConfigFilename = null;
-
-	public static final String eventQueueName = "defaultQueue";
-	public static final String ommConsumerName = "defaultConsumer";
-
+	private String feedConfigFilename = null;	
+	
 	public RobustFoundationAPI() {
 	}
 
@@ -82,7 +82,6 @@ public class RobustFoundationAPI
 	}
 
 	public void dispatch() {
-
 		try {
 			while (true) {
 				eventQueue.dispatch( 1000 );
@@ -117,7 +116,7 @@ public class RobustFoundationAPI
 
 			// 2. Create an Event Queue
 			logger.info( "Create an Event Queue" );
-			eventQueue = EventQueue.create( eventQueueName );
+			eventQueue = EventQueue.create( NAMED_EVENT_QUEUE );
 
 			// 3. Acquire a Session
 			logger.info( "Acquire a Session" );
@@ -129,7 +128,7 @@ public class RobustFoundationAPI
 
 			// 4. Create an OMMConsumer event source
 			logger.info( "Create an OMMConsumer event source" );
-			ommConsumer = (OMMConsumer) session.createEventSource( EventSource.OMM_CONSUMER, ommConsumerName, true );
+			ommConsumer = (OMMConsumer) session.createEventSource( EventSource.OMM_CONSUMER, NAMED_OMM_CONSUMER, true );
 
 			GenericOMMParser.initializeDictionary( fieldDictionaryFilename, enumDictionaryFilename );
 
